@@ -13,6 +13,7 @@ describe('CabinetService', () => {
     findOne: jest.fn(),
     save: jest.fn(),
     update: jest.fn(),
+    delete: jest.fn(),
   };
 
   let testHerb: Herb = {
@@ -90,7 +91,7 @@ describe('CabinetService', () => {
   it('should call update when called', async () => {
     entityMock.update = jest.fn().mockResolvedValueOnce({ affected: 1 });
     entityMock.findOne = jest.fn().mockResolvedValueOnce(testHerb);
-    await service.updateHerb({ id: testHerb.id, payload: testHerb });
+    await service.updateHerb(testHerb);
     expect(entityMock.update).toHaveBeenCalled();
   });
   it('should call update when called but fail', async () => {
@@ -98,7 +99,7 @@ describe('CabinetService', () => {
       .fn()
       .mockRejectedValueOnce(new BadRequestException('failed'));
     try {
-      await service.updateHerb({ id: testHerb.id, payload: testHerb });
+      await service.updateHerb(testHerb);
       expect(entityMock.update).toHaveBeenCalled();
     } catch (error) {
       expect(error).toBeDefined();
@@ -107,9 +108,37 @@ describe('CabinetService', () => {
   });
   it('should call update when called but fails to update', async () => {
     entityMock.update = jest.fn().mockResolvedValueOnce({ affected: 0 });
+    entityMock.findOne = jest.fn().mockResolvedValueOnce(testHerb);
     try {
-      await service.updateHerb({ id: testHerb.id, payload: testHerb });
+      await service.updateHerb(testHerb);
       expect(entityMock.update).toHaveBeenCalled();
+    } catch (error) {
+      expect(error).toBeDefined();
+      expect(error.message).toContain('Unable');
+    }
+  });
+  it('should call delete when called', async () => {
+    entityMock.delete = jest.fn().mockResolvedValueOnce({ affected: 1 });
+    await service.deleteHerb(testHerb.id);
+    expect(entityMock.delete).toHaveBeenCalled();
+  });
+  it('should call update when called but fail', async () => {
+    entityMock.delete = jest
+      .fn()
+      .mockRejectedValueOnce(new BadRequestException('failed'));
+    try {
+      await service.deleteHerb(testHerb.id);
+      expect(entityMock.delete).toHaveBeenCalled();
+    } catch (error) {
+      expect(error).toBeDefined();
+      expect(error.message).toContain('failed');
+    }
+  });
+  it('should call update when called but fails to update', async () => {
+    entityMock.delete = jest.fn().mockResolvedValueOnce({ affected: 0 });
+    try {
+      await service.deleteHerb(testHerb.id);
+      expect(entityMock.delete).toHaveBeenCalled();
     } catch (error) {
       expect(error).toBeDefined();
       expect(error.message).toContain('Unable');

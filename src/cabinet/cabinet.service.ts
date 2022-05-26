@@ -1,5 +1,5 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
-import { Repository, UpdateResult } from 'typeorm';
+import { BadRequestException, HttpCode, Injectable } from '@nestjs/common';
+import { DeleteResult, Repository, UpdateResult } from 'typeorm';
 
 import { HerbEntity } from '../models/herb.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -36,18 +36,30 @@ export class CabinetService {
       throw new BadRequestException(error.message);
     }
   }
-  // @TODO --> might changer to just have id within body recieved.
-  async updateHerb({ id, payload }: { id: number; payload: Herb }) {
+  
+  async updateHerb(payload:Herb) {
+    const {id, ...rest} = payload;
     try {
       const updatedEntity: UpdateResult = await this.herbRepository.update(
         id,
-        payload,
+        rest,
       );
-      if (updatedEntity.affected <= 0) {
-        throw new BadRequestException('Unable to update herb');
-      }
       const entity = await this.herbRepository.findOne({ where: { id: id } });
+      if (updatedEntity.affected <= 0) {
+        throw new BadRequestException(`Unable to update ${entity.generic_name}`);
+      }
       return entity;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
+  }
+  async deleteHerb(id: number) {
+    try {
+      const entity:DeleteResult = await this.herbRepository.delete(id);
+      if (entity.affected <= 0) {
+        throw new BadRequestException('Unable to delete herb');
+      }
+      return HttpCode(204);
     } catch (error) {
       throw new BadRequestException(error.message);
     }
