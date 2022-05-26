@@ -24,3 +24,10 @@ export interface Herb {
   expiration_date?: Date | null;
   createdOn: Date;
 }
+
+export interface ApiResponse<T> {
+  payload: T;
+  utils?: any;
+  message?: string | undefined;
+  error?: string | Error | null;
+}

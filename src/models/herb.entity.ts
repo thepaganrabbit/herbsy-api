@@ -1,4 +1,4 @@
-import { AmountTypes, HerbTypes } from 'src/types';
+import { AmountTypes, HerbTypes } from '../types';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity('herb')
