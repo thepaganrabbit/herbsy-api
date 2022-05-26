@@ -3,6 +3,8 @@
 /node_modules
 /coverage
 
+*.env
+
 # Logs
 logs
 *.log
