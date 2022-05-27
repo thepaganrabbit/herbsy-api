@@ -19,12 +19,13 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
     private readonly jwtService: JwtService,
   ) {}
+
   async login(user: LogInCredentials): Promise<PublicUser> {
     try {
       const foundUser = await this.userRepository.findOne({
         where: { email: user.email },
       });
-      if (!foundUser) throw new BadRequestException('failed to locate user');
+      if (!foundUser) throw new BadRequestException('Failed to locate user');
       const isMatch = await compare(user.password, foundUser.passowrd);
       if (!isMatch) throw new ForbiddenException('Unable to log you in');
       const token = this.jwtService.sign(
@@ -36,7 +37,9 @@ export class UserService {
         user_id: foundUser.user_id,
         token,
       };
-    } catch (error) {}
+    } catch (error) {
+      throw new ForbiddenException(error);
+    }
   }
   async signup(incomingUser: User): Promise<PublicUser> {
     try {

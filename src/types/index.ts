@@ -48,7 +48,7 @@ export interface User {
 }
 
 export interface PublicUser {
-  user_id?: string;
   full_name: string;
-  token: string;
+  user_id?: string;
+  token?: string;
 }
