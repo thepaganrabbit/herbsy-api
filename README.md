@@ -12,9 +12,11 @@ Backned for Herbsy, storage for users to save and log all their spices.
 
 Sample env: 
 
-POSTGRES_PORT=
+```bash
+POSTGRES_PORT= 
 POSTGRES_HOST=
 POSTGRES_USER=
 POSTGRES_PASSWORD=
 POSTGRES_DB= 
-SECRET=
+SECRET= # jwt secret
+```
