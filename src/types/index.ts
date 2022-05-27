@@ -16,6 +16,7 @@ export enum AmountTypes {
 
 export interface Herb {
   id?: number;
+  userId?: number;
   generic_name: string;
   scientific_name?: string;
   type: HerbTypes;
@@ -30,4 +31,24 @@ export interface ApiResponse<T> {
   utils?: any;
   message?: string | undefined;
   error?: string | Error | null;
+}
+
+export interface LogInCredentials {
+  email: string;
+  password: string;
+}
+
+export interface User {
+  id?: number;
+  user_id?: string;
+  full_name: string;
+  email: string;
+  password: string;
+  createdOn: Date;
+}
+
+export interface PublicUser {
+  user_id?: string;
+  full_name: string;
+  token: string;
 }

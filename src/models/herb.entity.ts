@@ -6,6 +6,8 @@ export class HerbEntity {
   @PrimaryGeneratedColumn()
   id: number;
   @Column()
+  user_id: string;
+  @Column()
   generic_name: string;
   @Column({ default: '' })
   scientific_name?: string;

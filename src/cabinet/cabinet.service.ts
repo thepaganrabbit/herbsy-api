@@ -23,8 +23,10 @@ export class CabinetService {
   async getHerbs() {
     try {
       const entities = await this.herbRepository.find({});
+      if(entities.length <=0) return [] 
       return entities;
     } catch (error) {
+      console.log('in error');
       throw new BadRequestException(error.message);
     }
   }
@@ -36,9 +38,9 @@ export class CabinetService {
       throw new BadRequestException(error.message);
     }
   }
-  
-  async updateHerb(payload:Herb) {
-    const {id, ...rest} = payload;
+
+  async updateHerb(payload: Herb) {
+    const { id, ...rest } = payload;
     try {
       const updatedEntity: UpdateResult = await this.herbRepository.update(
         id,
@@ -46,7 +48,9 @@ export class CabinetService {
       );
       const entity = await this.herbRepository.findOne({ where: { id: id } });
       if (updatedEntity.affected <= 0) {
-        throw new BadRequestException(`Unable to update ${entity.generic_name}`);
+        throw new BadRequestException(
+          `Unable to update ${entity.generic_name}`,
+        );
       }
       return entity;
     } catch (error) {
@@ -55,7 +59,7 @@ export class CabinetService {
   }
   async deleteHerb(id: number) {
     try {
-      const entity:DeleteResult = await this.herbRepository.delete(id);
+      const entity: DeleteResult = await this.herbRepository.delete(id);
       if (entity.affected <= 0) {
         throw new BadRequestException('Unable to delete herb');
       }

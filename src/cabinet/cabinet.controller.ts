@@ -1,6 +1,6 @@
 import { CabinetService } from './cabinet.service';
 import { ApiResponse, Herb } from './../types/index';
-import { Body, Controller, Delete, Get, Param, Post, Put, HttpCode } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, HttpCode, Query } from '@nestjs/common';
 
 @Controller('cabinet')
 export class CabinetController {
@@ -21,8 +21,10 @@ export class CabinetController {
       };
     }
   }
-  @Get(':id')
-  async getOne(@Param('id') id: string): Promise<ApiResponse<Herb>> {
+  @Get('/herb')
+  async getOne(@Query('id') id: string): Promise<ApiResponse<Herb>> {
+    console.log('in');
+
     try {
       const herb = await this.cabinetService.getHerb(parseInt(id));
       return {
@@ -69,8 +71,8 @@ export class CabinetController {
       };
     }
   }
-  @Delete(':id')
-  async deleteHerb(@Param('id') id: string): Promise<ApiResponse<MethodDecorator>> {
+  @Delete()
+  async deleteHerb(@Query('id') id: string): Promise<ApiResponse<MethodDecorator>> {
     try {
       const herb = await this.cabinetService.deleteHerb(parseInt(id));
       return {
