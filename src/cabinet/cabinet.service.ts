@@ -12,25 +12,27 @@ export class CabinetService {
     private readonly herbRepository: Repository<HerbEntity>,
   ) {}
 
-  async addHerb(herb: Herb) {
+  async addHerb(herb: Herb, user_id: string) {
     try {
+      herb.user_id = user_id;
       const savedEntity = await this.herbRepository.save(herb);
       return savedEntity;
     } catch (error) {
       throw new BadRequestException(error.message);
     }
   }
-  async getHerbs() {
+  async getHerbs(user_id: string) {
     try {
-      const entities = await this.herbRepository.find({});
-      if(entities.length <=0) return [] 
+      const entities = await this.herbRepository.find({
+        where: { user_id },
+      });
+      if (entities.length <= 0) return [];
       return entities;
     } catch (error) {
-      console.log('in error');
       throw new BadRequestException(error.message);
     }
   }
-  async getHerb(id: number) {
+  async getHerb(id: number, user_id: string) {
     try {
       const entity = await this.herbRepository.findOne({ where: { id: id } });
       return entity;
@@ -39,11 +41,11 @@ export class CabinetService {
     }
   }
 
-  async updateHerb(payload: Herb) {
+  async updateHerb(payload: Herb, user_id: string) {
     const { id, ...rest } = payload;
     try {
       const updatedEntity: UpdateResult = await this.herbRepository.update(
-        id,
+        { id: id, user_id: user_id },
         rest,
       );
       const entity = await this.herbRepository.findOne({ where: { id: id } });
@@ -57,9 +59,12 @@ export class CabinetService {
       throw new BadRequestException(error.message);
     }
   }
-  async deleteHerb(id: number) {
+  async deleteHerb(id: number, user_id: string) {
     try {
-      const entity: DeleteResult = await this.herbRepository.delete(id);
+      const entity: DeleteResult = await this.herbRepository.delete({
+        id: id,
+        user_id: user_id,
+      });
       if (entity.affected <= 0) {
         throw new BadRequestException('Unable to delete herb');
       }
