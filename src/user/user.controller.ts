@@ -5,7 +5,7 @@ import {
   PublicUser,
   LogInCredentials,
 } from './../types/index';
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, BadRequestException } from '@nestjs/common';
 
 @Controller('user')
 export class UserController {

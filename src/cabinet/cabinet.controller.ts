@@ -1,7 +1,7 @@
 import { CabinetService } from './cabinet.service';
 import { ApiResponse, Herb } from './../types/index';
 import { Body, Controller, Delete, Get, Param, Post, Put, HttpCode, Query, UseGuards, Request } from '@nestjs/common';
-import { AuthGuard } from 'src/auth.guard';
+import { AuthGuard } from '../auth.guard';
 
 @Controller('cabinet')
 export class CabinetController {
@@ -26,8 +26,6 @@ export class CabinetController {
   @UseGuards(AuthGuard)
   @Get('/herb')
   async getOne(@Query('id') id: string, @Request() req): Promise<ApiResponse<Herb>> {
-    console.log('in');
-
     try {
       const herb = await this.cabinetService.getHerb(parseInt(id), req.user.user_id);
       return {
