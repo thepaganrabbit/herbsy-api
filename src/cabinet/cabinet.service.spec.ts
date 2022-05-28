@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CabinetService } from './cabinet.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Herb, HerbTypes } from '../types';
+import { v4 } from 'uuid';
 
 describe('CabinetService', () => {
   let service: CabinetService;
@@ -18,6 +19,7 @@ describe('CabinetService', () => {
 
   let testHerb: Herb = {
     id: 2,
+    user_id: v4(),
     generic_name: 'Salt',
     type: HerbTypes.GROUND,
     createdOn: new Date(),
@@ -41,7 +43,7 @@ describe('CabinetService', () => {
     expect(service).toBeDefined();
   });
   it('should call save when called', async () => {
-    await service.addHerb(testHerb);
+    await service.addHerb(testHerb, testHerb.user_id);
     expect(entityMock.save).toHaveBeenCalled();
   });
   it('should call save when called but fail', async () => {
@@ -49,7 +51,7 @@ describe('CabinetService', () => {
       .fn()
       .mockRejectedValue(new BadRequestException('failed'));
     try {
-      await service.addHerb(testHerb);
+      await service.addHerb(testHerb, testHerb.user_id);
       expect(entityMock.save).toHaveBeenCalled();
     } catch (error) {
       expect(error).toBeDefined();
@@ -57,7 +59,10 @@ describe('CabinetService', () => {
     }
   });
   it('should call find when called', async () => {
-    await service.getHerbs();
+    entityMock.find = jest
+      .fn()
+      .mockResolvedValueOnce([testHerb]);
+    await service.getHerbs(testHerb.user_id);
     expect(entityMock.find).toHaveBeenCalled();
   });
   it('should call find when called but fail', async () => {
@@ -65,7 +70,7 @@ describe('CabinetService', () => {
       .fn()
       .mockRejectedValue(new BadRequestException('failed'));
     try {
-      await service.getHerbs();
+      await service.getHerbs(testHerb.user_id);
       expect(entityMock.find).toHaveBeenCalled();
     } catch (error) {
       expect(error).toBeDefined();
@@ -73,7 +78,7 @@ describe('CabinetService', () => {
     }
   });
   it('should call findOne when called', async () => {
-    await service.getHerb(testHerb.id);
+    await service.getHerb(testHerb.id, testHerb.user_id);
     expect(entityMock.findOne).toHaveBeenCalled();
   });
   it('should call findOne when called but fail', async () => {
@@ -81,7 +86,7 @@ describe('CabinetService', () => {
       .fn()
       .mockRejectedValue(new BadRequestException('failed'));
     try {
-      await service.getHerb(testHerb.id);
+      await service.getHerb(testHerb.id, testHerb.user_id);
       expect(entityMock.findOne).toHaveBeenCalled();
     } catch (error) {
       expect(error).toBeDefined();
@@ -91,7 +96,7 @@ describe('CabinetService', () => {
   it('should call update when called', async () => {
     entityMock.update = jest.fn().mockResolvedValueOnce({ affected: 1 });
     entityMock.findOne = jest.fn().mockResolvedValueOnce(testHerb);
-    await service.updateHerb(testHerb);
+    await service.updateHerb(testHerb, testHerb.user_id);
     expect(entityMock.update).toHaveBeenCalled();
   });
   it('should call update when called but fail', async () => {
@@ -99,7 +104,7 @@ describe('CabinetService', () => {
       .fn()
       .mockRejectedValueOnce(new BadRequestException('failed'));
     try {
-      await service.updateHerb(testHerb);
+      await service.updateHerb(testHerb, testHerb.user_id);
       expect(entityMock.update).toHaveBeenCalled();
     } catch (error) {
       expect(error).toBeDefined();
@@ -110,7 +115,7 @@ describe('CabinetService', () => {
     entityMock.update = jest.fn().mockResolvedValueOnce({ affected: 0 });
     entityMock.findOne = jest.fn().mockResolvedValueOnce(testHerb);
     try {
-      await service.updateHerb(testHerb);
+      await service.updateHerb(testHerb, testHerb.user_id);
       expect(entityMock.update).toHaveBeenCalled();
     } catch (error) {
       expect(error).toBeDefined();
@@ -119,7 +124,7 @@ describe('CabinetService', () => {
   });
   it('should call delete when called', async () => {
     entityMock.delete = jest.fn().mockResolvedValueOnce({ affected: 1 });
-    await service.deleteHerb(testHerb.id);
+    await service.deleteHerb(testHerb.id, testHerb.user_id);
     expect(entityMock.delete).toHaveBeenCalled();
   });
   it('should call update when called but fail', async () => {
@@ -127,7 +132,7 @@ describe('CabinetService', () => {
       .fn()
       .mockRejectedValueOnce(new BadRequestException('failed'));
     try {
-      await service.deleteHerb(testHerb.id);
+      await service.deleteHerb(testHerb.id, testHerb.user_id);
       expect(entityMock.delete).toHaveBeenCalled();
     } catch (error) {
       expect(error).toBeDefined();
@@ -137,7 +142,7 @@ describe('CabinetService', () => {
   it('should call update when called but fails to update', async () => {
     entityMock.delete = jest.fn().mockResolvedValueOnce({ affected: 0 });
     try {
-      await service.deleteHerb(testHerb.id);
+      await service.deleteHerb(testHerb.id, testHerb.user_id);
       expect(entityMock.delete).toHaveBeenCalled();
     } catch (error) {
       expect(error).toBeDefined();

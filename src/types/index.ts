@@ -16,7 +16,7 @@ export enum AmountTypes {
 
 export interface Herb {
   id?: number;
-  userId?: number;
+  user_id?: string;
   generic_name: string;
   scientific_name?: string;
   type: HerbTypes;
@@ -47,6 +47,14 @@ export interface User {
   createdOn: Date;
 }
 
+export interface JWTPayload {
+  exp: number;
+  payload: {
+    full_name: string;
+    user_id: string;
+  };
+}
+// FIXME: Public user is being pulled from somewhere else and causes an issue whn used in ApiResponse.
 export interface PublicUser {
   full_name: string;
   user_id?: string;

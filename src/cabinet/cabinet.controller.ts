@@ -1,14 +1,16 @@
 import { CabinetService } from './cabinet.service';
 import { ApiResponse, Herb } from './../types/index';
-import { Body, Controller, Delete, Get, Param, Post, Put, HttpCode, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, HttpCode, Query, UseGuards, Request } from '@nestjs/common';
+import { AuthGuard } from '../auth.guard';
 
 @Controller('cabinet')
 export class CabinetController {
   constructor(private readonly cabinetService: CabinetService) {}
+  @UseGuards(AuthGuard)
   @Get()
-  async getAll(): Promise<ApiResponse<Herb[]>> {
+  async getAll(@Request() req): Promise<ApiResponse<Herb[]>> {
     try {
-      const herbs = await this.cabinetService.getHerbs();
+      const herbs = await this.cabinetService.getHerbs(req.user.user_id);
       return {
         payload: herbs,
         message: 'Successfully retrieved herbs',
@@ -21,12 +23,11 @@ export class CabinetController {
       };
     }
   }
+  @UseGuards(AuthGuard)
   @Get('/herb')
-  async getOne(@Query('id') id: string): Promise<ApiResponse<Herb>> {
-    console.log('in');
-
+  async getOne(@Query('id') id: string, @Request() req): Promise<ApiResponse<Herb>> {
     try {
-      const herb = await this.cabinetService.getHerb(parseInt(id));
+      const herb = await this.cabinetService.getHerb(parseInt(id), req.user.user_id);
       return {
         payload: herb,
         message: 'Successfully retrieved herb',
@@ -39,10 +40,11 @@ export class CabinetController {
       };
     }
   }
+  @UseGuards(AuthGuard)
   @Post()
-  async addHerb(@Body() incommingHerb: Herb): Promise<ApiResponse<Herb>> {
+  async addHerb(@Body() incommingHerb: Herb, @Request() req): Promise<ApiResponse<Herb>> {
     try {
-      const herb = await this.cabinetService.addHerb(incommingHerb);
+      const herb = await this.cabinetService.addHerb(incommingHerb, req.user.user_id);
       return {
         payload: herb,
         message: 'Successfully added herb',
@@ -55,10 +57,11 @@ export class CabinetController {
       };
     }
   }
+  @UseGuards(AuthGuard)
   @Put()
-  async updateHerb(@Body() incommingUpdatedHerb: Herb): Promise<ApiResponse<Herb>> {
+  async updateHerb(@Body() incommingUpdatedHerb: Herb, @Request() req): Promise<ApiResponse<Herb>> {
     try {
-      const herb = await this.cabinetService.updateHerb(incommingUpdatedHerb);
+      const herb = await this.cabinetService.updateHerb(incommingUpdatedHerb, req.user.user_id);
       return {
         payload: herb,
         message: 'Successfully updated herb',
@@ -71,10 +74,11 @@ export class CabinetController {
       };
     }
   }
+  @UseGuards(AuthGuard)
   @Delete()
-  async deleteHerb(@Query('id') id: string): Promise<ApiResponse<MethodDecorator>> {
+  async deleteHerb(@Query('id') id: string, @Request() req): Promise<ApiResponse<MethodDecorator>> {
     try {
-      const herb = await this.cabinetService.deleteHerb(parseInt(id));
+      const herb = await this.cabinetService.deleteHerb(parseInt(id), req.user.user_id);
       return {
         payload: herb,
         message: 'Successfully deleted herb',
